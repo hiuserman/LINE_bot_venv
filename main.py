@@ -89,8 +89,8 @@ def getImageLine(id):
     img_main = img.resize((width_main, height_main))
     img_preview = img.resize((width_preview, height_preview))
     image_path = {
-        "main": f"static/images/image_{id}_main.png",
-        "preview": f"static/images/image_{id}_preview.png"
+        "main": f"static/images/image_{id}_main.jpg",
+        "preview": f"static/images/image_{id}_preview.jpg"
     }
     img_main.save(image_path["main"])
     img_preview.save(image_path["preview"])
