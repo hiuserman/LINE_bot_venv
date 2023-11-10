@@ -8,7 +8,6 @@ from io import BytesIO
 import psycopg2
 
 
-# サンプルコードの11~14行目を以下のように書き換え
 LINE_CHANNEL_ACCESS_TOKEN = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]
 LINE_CHANNEL_SECRET = os.environ["LINE_CHANNEL_SECRET"]
 DATABASE_URL = os.environ["DATABASE_URL"]
@@ -64,8 +63,8 @@ def handle_image(event):
     line_bot_api.reply_message(
         event.reply_token,
         ImageSendMessage(
-            original_content_url = RENDER + image_path["main"],
-            preview_image_url = RENDER + image_path["preview"]
+            original_content_url = "https://hiuser-linebot-sotuken2.onrender.com"+ image_path["main"],
+            preview_image_url = "https://hiuser-linebot-sotuken2.onrender.com" + image_path["preview"]
         )
     )
     print("画像の送信完了!!")
