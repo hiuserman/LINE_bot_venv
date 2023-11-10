@@ -62,8 +62,8 @@ def handle_image(event):
     line_bot_api.reply_message(
         event.reply_token,
         ImageSendMessage(
-            original_content_url = Heroku + image_path["main"],
-            preview_image_url = Heroku + image_path["preview"]
+            original_content_url = image_path["main"],
+            preview_image_url = image_path["preview"]
         )
     )
     print("画像の送信完了!!")
