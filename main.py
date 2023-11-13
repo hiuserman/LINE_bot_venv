@@ -99,7 +99,7 @@ def getImageLine(id):
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     if event.message.text == "こんにちは":
-        image_url = "https://hiuser-linebot-sotuken2.onrender.com/static/images/your_image.jpg"  # 画像のURLを適切に変更してください
+        image_url = "https://hiuser-linebot-sotuken2.onrender.com/static/images/a.jpg"  # 画像のURLを適切に変更してください
         line_bot_api.reply_message(
             event.reply_token,
             ImageSendMessage(
