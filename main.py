@@ -14,7 +14,7 @@ DATABASE_URL = os.environ["DATABASE_URL"]
 RENDER_APP_NAME = os.environ["RENDER_APP_NAME"]
 
 app = Flask(__name__)
-RENDER = "https://hiuser-linebot-sotuken2.onrender.com".format(RENDER_APP_NAME)
+RENDER = "https://hiuser-linebot-sotuken2.onrender.com/".format(RENDER_APP_NAME)
 
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
@@ -63,8 +63,8 @@ def handle_image(event):
     line_bot_api.reply_message(
         event.reply_token,
         ImageSendMessage(
-            original_content_url = "https://hiuser-linebot-sotuken2.onrender.com"+ image_path["main"],
-            preview_image_url = "https://hiuser-linebot-sotuken2.onrender.com" + image_path["preview"]
+            original_content_url = RENDER + image_path["main"],
+            preview_image_url = RENDER + image_path["preview"]
         )
     )
     print("画像の送信完了!!")
@@ -89,8 +89,8 @@ def getImageLine(id):
     img_main = img.resize((width_main, height_main))
     img_preview = img.resize((width_preview, height_preview))
     image_path = {
-        "main": f"static/images/main.jpg",
-        "preview": f"static/images/preview.jpg"
+        "main": f"static/images/image_{id}_main.jpg",
+        "preview": f"static/images/image_{id}_preview.jpg"
     }
     img_main.save(image_path["main"])
     img_preview.save(image_path["preview"])
