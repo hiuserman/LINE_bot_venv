@@ -96,6 +96,25 @@ def getImageLine(id):
     img_preview.save(image_path["preview"])
     return image_path
 
+@handler.add(MessageEvent, message=TextMessage)
+def handle_message(event):
+    if event.message.text == "こんにちは":
+        image_url = "https://hiuser-linebot-sotuken2.onrender.com/static/images/your_image.jpg"  # 画像のURLを適切に変更してください
+        line_bot_api.reply_message(
+            event.reply_token,
+            ImageSendMessage(
+                original_content_url=image_url,
+                preview_image_url=image_url
+            )
+        )
+        print("画像の送信完了!!")
+    else:
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=event.message.text)
+        )
+        print("テキストメッセージの送信完了!!")
+
 
 # データベース接続
 def get_connection():
