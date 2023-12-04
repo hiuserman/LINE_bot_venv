@@ -40,7 +40,7 @@ def update_averagetemp():
     try:
         data = request.json
         averagetemp = data.get('averagetemp')
-        return {'status': 'success'}
+        return {'status': 'success'} & print("aveve")
     except Exception as e:
         return {'status': 'error', 'message': str(e)}
 
@@ -104,7 +104,7 @@ def handle_message(event):
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    global averagetemp
+    #global averagetemp
     message_text = event.message.text
     if message_text.lower() == '温度':
         reply_text = f'現在の温度は {averagetemp} 度です。'
