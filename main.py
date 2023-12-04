@@ -1,4 +1,4 @@
-from flask import Flask, request, abort
+from flask import Flask, render_template, abort, request
 import requests, os
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
@@ -12,6 +12,8 @@ LINE_CHANNEL_ACCESS_TOKEN = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]
 LINE_CHANNEL_SECRET = os.environ["LINE_CHANNEL_SECRET"]
 DATABASE_URL = os.environ["DATABASE_URL"]
 RENDER_APP_NAME = os.environ["RENDER_APP_NAME"]
+
+averagetemp = None  # デフォルト値を設定
 
 app = Flask(__name__)
 RENDER = "https://hiuser-linebot-sotuken2.onrender.com/".format(RENDER_APP_NAME)
@@ -28,6 +30,19 @@ header = {
 def hello_world():
     return "hello world!"
 
+def index():
+    return render_template('index.html', averagetemp=averagetemp)
+
+# HTTP POSTリクエストを受け付けるエンドポイント
+@app.route('/update_averagetemp', methods=['POST'])
+def update_averagetemp():
+    global averagetemp
+    try:
+        data = request.json
+        averagetemp = data.get('averagetemp')
+        return {'status': 'success'}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}
 
 # アプリにPOSTがあったときの処理
 @app.route("/callback", methods=["POST"])
