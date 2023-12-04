@@ -107,12 +107,11 @@ def handle_message(event):
     global averagetemp
     message_text = event.message.text
     if message_text.lower() == '温度':
-        if averagetemp is not None:
-            reply_text = f'現在の温度は {averagetemp} 度です。'
-        else:
-            reply_text = '温度データはありません。'
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
-        print("テキストメッセージの送信完了!!")
+        reply_text = f'現在の温度は {averagetemp} 度です。'
+        line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text=reply_text))
+    print("返信完了!!\ntext:", event.message.text)
 
 
 # データベース接続
