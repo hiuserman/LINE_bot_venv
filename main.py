@@ -58,17 +58,6 @@ def callback():
     except InvalidSignatureError:
         abort(400)
     return "OK"
-
-# averagetempを更新するエンドポイント
-@app.route('/update_averagetemp', methods=['POST'])
-def update_averagetemp():
-    global averagetemp
-    try:
-        data = request.json
-        averagetemp = data.get('averagetemp')
-        return {'status': 'success'}
-    except Exception as e:
-        return {'status': 'error', 'message': str(e)}
     
 # botにメッセージを送ったときの処理
 @handler.add(MessageEvent, message=TextMessage)
