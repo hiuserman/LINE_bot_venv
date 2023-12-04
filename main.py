@@ -70,31 +70,7 @@ def handle_image(event):
     print("画像の送信完了!!")
 
 
-# 受信メッセージに添付された画像ファイルを取得
-def getImageLine(id):
-    line_url = f"https://api-data.line.me/v2/bot/message/{id}/content"
-    result = requests.get(line_url, headers=header)
-    print(result)
 
-    img = Image.open(BytesIO(result.content))
-    w, h = img.size
-    if w >= h:
-        ratio_main, ratio_preview = w / 1024, w / 240
-    else:
-        ratio_main, ratio_preview = h / 1024, h / 240
-
-    width_main, width_preview = int(w // ratio_main), int(w // ratio_preview)
-    height_main, height_preview = int(h // ratio_main), int(h // ratio_preview)
-
-    img_main = img.resize((width_main, height_main))
-    img_preview = img.resize((width_preview, height_preview))
-    image_path = {
-        "main": f"static/images/image_{id}_main.jpg",
-        "preview": f"static/images/image_{id}_preview.jpg"
-    }
-    img_main.save(image_path["main"])
-    img_preview.save(image_path["preview"])
-    return image_path
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
@@ -113,6 +89,18 @@ def handle_message(event):
             event.reply_token,
             TextSendMessage(text=event.message.text)
         )
+        print("テキストメッセージの送信完了!!")
+
+@handler.add(MessageEvent, message=TextMessage)
+def handle_message(event):
+    global averagetemp
+    message_text = event.message.text
+    if message_text.lower() == '温度':
+        if averagetemp is not None:
+            reply_text = f'現在の温度は {averagetemp} 度です。'
+        else:
+            reply_text = '温度データはありません。'
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
         print("テキストメッセージの送信完了!!")
 
 
