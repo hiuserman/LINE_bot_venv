@@ -59,7 +59,17 @@ def callback():
         abort(400)
     return "OK"
 
-
+# averagetempを更新するエンドポイント
+@app.route('/update_averagetemp', methods=['POST'])
+def update_averagetemp():
+    global averagetemp
+    try:
+        data = request.json
+        averagetemp = data.get('averagetemp')
+        return {'status': 'success'}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}
+    
 # botにメッセージを送ったときの処理
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
@@ -84,13 +94,10 @@ def handle_image(event):
     )
     print("画像の送信完了!!")
 
-
-
-
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     if event.message.text == "こんにちは":
-        image_url = "https://hiuser-linebot-sotuken2.onrender.com/static/images/a.jpg"  # 画像のURLを適切に変更してください
+        image_url = "https://hiuser-linebot-sotuken2.onrender.com/static/images/a.jpg"  # 画像のURL
         line_bot_api.reply_message(
             event.reply_token,
             ImageSendMessage(
