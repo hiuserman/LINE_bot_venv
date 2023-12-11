@@ -61,6 +61,7 @@ def update_averagetemp():
     try:
         data = request.json
         averagetemp = data.get('averagetemp')
+        print(averagetemp)
         return {'status': 'success'}
     except Exception as e:
         return {'status': 'error', 'message': str(e)}
