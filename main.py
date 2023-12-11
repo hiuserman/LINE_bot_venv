@@ -45,7 +45,7 @@ def callback():
 # メッセージイベントのハンドリング
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    #global averagetemp
+    global averagetemp
     message_text = event.message.text
     if message_text.lower() == '温度':
         if averagetemp is not None:
