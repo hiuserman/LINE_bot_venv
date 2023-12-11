@@ -108,6 +108,7 @@ def update_averagetemp():
     try:
         data = request.json
         averagetemp = data.get('averagetemp')
+        print(averagetemp)
         print("aveve")
         return jsonify({'status': 'success'})
     except Exception as e:
