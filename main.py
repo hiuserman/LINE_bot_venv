@@ -30,9 +30,6 @@ header = {
 @app.route("/")
 def hello_world():
     return "hello world!"
-
-def index():
-    return render_template('index.html', averagetemp=averagetemp)
     
 # LINEからのWebhookを受け付けるエンドポイント
 @app.route("/callback", methods=['POST'])
@@ -94,7 +91,7 @@ def handle_message(event):
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    #global averagetemp
+    global averagetemp
     message_text = event.message.text
     if message_text.lower() == '温度':
         reply_text = f'現在の温度は {averagetemp} 度です。'
