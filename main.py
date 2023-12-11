@@ -47,6 +47,7 @@ def callback():
     return 'OK'
 
 # メッセージイベントのハンドリング
+@handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     global averagetemp
     message_text = event.message.text
