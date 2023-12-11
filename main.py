@@ -71,7 +71,7 @@ def handle_image(event):
     print("画像の送信完了!!")
 
 @handler.add(MessageEvent, message=TextMessage)
-def handle_message(event):
+def handle_text_message(event):
     if event.message.text == "こんにちは":
         image_url = "https://hiuser-linebot-sotuken2.onrender.com/static/images/a.jpg"  # 画像のURL
         line_bot_api.reply_message(
@@ -90,14 +90,14 @@ def handle_message(event):
         print("テキストメッセージの送信完了!!")
 
 @handler.add(MessageEvent, message=TextMessage)
-def handle_message(event):
-    global averagetemp
+def handle_temperature_message(event):
+    #global averagetemp
     message_text = event.message.text
     if message_text.lower() == '温度':
         reply_text = f'現在の温度は {averagetemp} 度です。'
         line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=reply_text))
+            event.reply_token,
+            TextSendMessage(text=reply_text))
     print("返信完了!!\ntext:", event.message.text)
 
 
