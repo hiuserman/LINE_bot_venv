@@ -14,7 +14,7 @@ LINE_CHANNEL_SECRET = os.environ["LINE_CHANNEL_SECRET"]
 DATABASE_URL = os.environ["DATABASE_URL"]
 RENDER_APP_NAME = os.environ["RENDER_APP_NAME"]
 
-#averagetemp = None  # デフォルト値を設定
+averagetemp = None  # デフォルト値を設定
 
 app = Flask(__name__)
 RENDER = "https://hiuser-linebot-sotuken2.onrender.com/".format(RENDER_APP_NAME)
