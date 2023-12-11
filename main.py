@@ -42,13 +42,6 @@ def callback():
 
     return 'OK'
 
-
-@app.route('/receive_data', methods=['GET'])
-def receive_data():
-    averagetemp = request.args.get('data')
-    print("averagetemp:", averagetemp)
-    return jsonify({'status': 'success'})
-
 # メッセージイベントのハンドリング
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
