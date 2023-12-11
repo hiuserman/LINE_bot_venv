@@ -1,4 +1,4 @@
-from flask import Flask, request, abort
+from flask import Flask, request, abort ,jsonify
 #import requests
 import os
 from linebot import LineBotApi, WebhookHandler
@@ -42,10 +42,17 @@ def callback():
 
     return 'OK'
 
+
+@app.route('/receive_data', methods=['GET'])
+def receive_data():
+    averagetemp = request.args.get('data')
+    print("averagetemp:", averagetemp)
+    return jsonify({'status': 'success'})
+
 # メッセージイベントのハンドリング
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    global averagetemp
+    #global averagetemp
     message_text = event.message.text
     if message_text.lower() == '温度':
         if averagetemp is not None:
