@@ -1,5 +1,5 @@
 from flask import Flask, request, abort ,jsonify
-#import requests
+import requests
 import os
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
@@ -28,6 +28,10 @@ header = {
     "Authorization": "Bearer " + LINE_CHANNEL_ACCESS_TOKEN
 }
 
+@app.route("/")
+def hello_world():
+    return "hello world!"
+
 # LINEからのWebhookを受け付けるエンドポイント
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -42,7 +46,6 @@ def callback():
 
     return 'OK'
 
-
 # botにメッセージを送ったときの処理
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
@@ -52,7 +55,6 @@ def handle_message(event):
     print("返信完了!!\ntext:", event.message.text)
 
 # メッセージイベントのハンドリング
-@handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     global averagetemp
     message_text = event.message.text
@@ -70,7 +72,7 @@ def update_averagetemp():
     try:
         data = request.json
         averagetemp = data.get('averagetemp')
-        print(averagetemp)
+        app.logger.info(f'Received averagetemp: {averagetemp}')
         return {'status': 'success'}
     except Exception as e:
         return {'status': 'error', 'message': str(e)}
