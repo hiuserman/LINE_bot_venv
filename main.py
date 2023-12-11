@@ -33,34 +33,22 @@ def hello_world():
 
 def index():
     return render_template('index.html', averagetemp=averagetemp)
-
-# HTTP POSTリクエストを受け付けるエンドポイント
-@app.route('/update_averagetemp', methods=['POST'])
-def update_averagetemp():
-    global averagetemp
-    try:
-        data = request.json
-        averagetemp = data.get('averagetemp')
-        print("aveve")
-        return {'status': 'success'}
-    except Exception as e:
-        return {'status': 'error', 'message': str(e)}
-
-# アプリにPOSTがあったときの処理
-@app.route("/callback", methods=["POST"])
+    
+# LINEからのWebhookを受け付けるエンドポイント
+@app.route("/callback", methods=['POST'])
 def callback():
-    # get X-Line-Signature header value
-    signature = request.headers["X-Line-Signature"]
-    # get request body as text
+    signature = request.headers['X-Line-Signature']
     body = request.get_data(as_text=True)
     app.logger.info("Request body: " + body)
-    # handle webhook body
+
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:
         abort(400)
-    return "OK"
-    
+
+    return 'OK'
+
+
 # botにメッセージを送ったときの処理
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
@@ -115,6 +103,19 @@ def handle_message(event):
         TextSendMessage(text=reply_text))
     print("返信完了!!\ntext:", event.message.text)
 
+
+# averagetempを更新するエンドポイント
+@app.route('/update_averagetemp', methods=['POST'])
+def update_averagetemp():
+    global averagetemp
+    try:
+        data = request.json
+        averagetemp = data.get('averagetemp')
+        print("aveve")
+        return {'status': 'success'}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}
+    
 
 # データベース接続
 def get_connection():
