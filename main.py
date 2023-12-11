@@ -42,6 +42,15 @@ def callback():
 
     return 'OK'
 
+
+# botにメッセージを送ったときの処理
+@handler.add(MessageEvent, message=TextMessage)
+def handle_message(event):
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text=event.message.text))
+    print("返信完了!!\ntext:", event.message.text)
+
 # メッセージイベントのハンドリング
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
