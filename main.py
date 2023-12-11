@@ -1,4 +1,5 @@
-from flask import Flask, render_template, abort, request
+from flask import Flask, render_template, abort, request, jsonify
+from flask_cors import CORS
 import requests, os
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
@@ -14,9 +15,10 @@ LINE_CHANNEL_SECRET = os.environ["LINE_CHANNEL_SECRET"]
 DATABASE_URL = os.environ["DATABASE_URL"]
 RENDER_APP_NAME = os.environ["RENDER_APP_NAME"]
 
-averagetemp = None  # デフォルト値を設定
+#averagetemp = None  # デフォルト値を設定
 
 app = Flask(__name__)
+CORS(app)
 RENDER = "https://hiuser-linebot-sotuken2.onrender.com/".format(RENDER_APP_NAME)
 
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
@@ -109,7 +111,7 @@ def update_averagetemp():
         data = request.json
         averagetemp = data.get('averagetemp')
         print("aveve")
-        return {'status': 'success'}
+        return jsonify({'status': 'success'})
     except Exception as e:
         return {'status': 'error', 'message': str(e)}
     
