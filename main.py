@@ -1,5 +1,6 @@
-from flask import Flask, render_template, abort, request, jsonify
-import requests, os
+from flask import Flask, request, abort
+#import requests
+import os
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage, ImageMessage, ImageSendMessage, FollowEvent, UnfollowEvent
@@ -27,10 +28,6 @@ header = {
     "Authorization": "Bearer " + LINE_CHANNEL_ACCESS_TOKEN
 }
 
-@app.route("/")
-def hello_world():
-    return "hello world!"
-    
 # LINEからのWebhookを受け付けるエンドポイント
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -45,61 +42,17 @@ def callback():
 
     return 'OK'
 
-
-# botにメッセージを送ったときの処理
+# メッセージイベントのハンドリング
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=event.message.text))
-    print("返信完了!!\ntext:", event.message.text)
-
-
-# botに画像を送ったときの処理
-@handler.add(MessageEvent, message=ImageMessage)
-def handle_image(event):
-    print("画像を受信")
-    message_id = event.message.id
-    image_path = getImageLine(message_id)
-    line_bot_api.reply_message(
-        event.reply_token,
-        ImageSendMessage(
-            original_content_url = RENDER + image_path["main"],
-            preview_image_url = RENDER + image_path["preview"]
-        )
-    )
-    print("画像の送信完了!!")
-
-@handler.add(MessageEvent, message=TextMessage)
-def handle_text_message(event):
-    if event.message.text == "こんにちは":
-        image_url = "https://hiuser-linebot-sotuken2.onrender.com/static/images/a.jpg"  # 画像のURL
-        line_bot_api.reply_message(
-            event.reply_token,
-            ImageSendMessage(
-                original_content_url=image_url,
-                preview_image_url=image_url
-            )
-        )
-        print("画像の送信完了!!")
-    else:
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=event.message.text)
-        )
-        print("テキストメッセージの送信完了!!")
-
-@handler.add(MessageEvent, message=TextMessage)
-def handle_temperature_message(event):
-    #global averagetemp
+    global averagetemp
     message_text = event.message.text
     if message_text.lower() == '温度':
-        reply_text = f'現在の温度は {averagetemp} 度です。'
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=reply_text))
-    print("返信完了!!\ntext:", event.message.text)
-
+        if averagetemp is not None:
+            reply_text = f'現在の温度は {averagetemp} 度です。'
+        else:
+            reply_text = '温度データはありません。'
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
 
 # averagetempを更新するエンドポイント
 @app.route('/update_averagetemp', methods=['POST'])
@@ -108,64 +61,9 @@ def update_averagetemp():
     try:
         data = request.json
         averagetemp = data.get('averagetemp')
-        print(averagetemp)
-        print("aveve")
-        return jsonify({'status': 'success'})
+        return {'status': 'success'}
     except Exception as e:
         return {'status': 'error', 'message': str(e)}
-    
 
-# データベース接続
-def get_connection():
-    return psycopg2.connect(DATABASE_URL, sslmode="require")
-
-
-# botがフォローされたときの処理
-@handler.add(FollowEvent)
-def handle_follow(event):
-    profile = line_bot_api.get_profile(event.source.user_id)
-    with get_connection() as conn:
-        with conn.cursor() as cur:
-            conn.autocommit = True
-            cur.execute('CREATE TABLE IF NOT EXISTS users(user_id TEXT)')
-            cur.execute('INSERT INTO users (user_id) VALUES (%s)', [profile.user_id])
-            print('userIdの挿入OK!!')
-            cur.execute('SELECT * FROM users')
-            db = cur.fetchall()
-    print("< データベース一覧 >")
-    for db_check in db:
-        print(db_check)
-
-
-# botがアンフォロー(ブロック)されたときの処理
-@handler.add(UnfollowEvent)
-def handle_unfollow(event):
-    with get_connection() as conn:
-        with conn.cursor() as cur:
-            conn.autocommit = True
-            cur.execute('DELETE FROM users WHERE user_id = %s', [event.source.user_id])
-    print("userIdの削除OK!!")
-
-
-# データベースに登録されたLINEアカウントからランダムでひとりにプッシュ通知
-def push():
-    with get_connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute('SELECT * FROM users ORDER BY random() LIMIT 1')
-            (to_user,) = cur.fetchone()
-    line_bot_api.multicast([to_user], TextSendMessage(text="今日もお疲れさん!!"))
-
-
-# アプリの起動
 if __name__ == "__main__":
-    # 初回のみデータベースのテーブル作成
-    with get_connection() as conn:
-        with conn.cursor() as cur:
-            conn.autocommit = True
-            cur.execute('CREATE TABLE IF NOT EXISTS users(user_id TEXT)')
-    
-    # LINE botをフォローしているアカウントのうちランダムで一人にプッシュ通知
-    push()
-    port = int(os.getenv("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
-### End
+    app.run(debug=True)
