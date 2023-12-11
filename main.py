@@ -49,13 +49,7 @@ def callback():
 # botにメッセージを送ったときの処理
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=event.message.text))
-    print("返信完了!!\ntext:", event.message.text)
-
 # メッセージイベントのハンドリング
-def handle_message(event):
     global averagetemp
     message_text = event.message.text
     if message_text.lower() == '温度':
@@ -64,6 +58,11 @@ def handle_message(event):
         else:
             reply_text = '温度データはありません。'
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
+
+    line_bot_api.reply_message(
+    event.reply_token,
+    TextSendMessage(text=event.message.text))
+    print("返信完了!!\ntext:", event.message.text)
 
 # averagetempを更新するエンドポイント
 @app.route('/update_averagetemp', methods=['POST'])
