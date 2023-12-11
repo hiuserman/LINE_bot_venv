@@ -1,5 +1,4 @@
 from flask import Flask, render_template, abort, request, jsonify
-from flask_cors import CORS
 import requests, os
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
@@ -18,7 +17,6 @@ RENDER_APP_NAME = os.environ["RENDER_APP_NAME"]
 #averagetemp = None  # デフォルト値を設定
 
 app = Flask(__name__)
-CORS(app)
 RENDER = "https://hiuser-linebot-sotuken2.onrender.com/".format(RENDER_APP_NAME)
 
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
