@@ -66,13 +66,13 @@ def update_averagetemp():
     global averagetemp
     try:
         data = request.json
-        averagetemp2 = data.get('averagetemp')
-        os.environ['AVERAGETEMP'] = str(averagetemp2)
-        app.logger.info(f'Received averagetemp: {averagetemp2}')
+        averagetemp = data.get('averagetemp')
+        os.environ['AVERAGETEMP'] = str(averagetemp)
+        app.logger.info(f'Received averagetemp: {averagetemp}')
         return {'status': 'success'}
     except Exception as e:
         print(f'Error: {str(e)}') 
         return {'status': 'error', 'message': str(e)}
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
