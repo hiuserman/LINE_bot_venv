@@ -14,7 +14,7 @@ LINE_CHANNEL_ACCESS_TOKEN = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]
 LINE_CHANNEL_SECRET = os.environ["LINE_CHANNEL_SECRET"]
 DATABASE_URL = os.environ["DATABASE_URL"]
 RENDER_APP_NAME = os.environ["RENDER_APP_NAME"]
-averagetemp = os.environ.get('AVERAGETEMP', None)
+
 
 #averagetemp = None  # デフォルト値を設定
 
@@ -73,4 +73,5 @@ def update_averagetemp():
         return {'status': 'error', 'message': str(e)}
 
 if __name__ == "__main__":
+    averagetemp = os.environ.get('AVERAGETEMP', None)
     app.run(debug=True)
