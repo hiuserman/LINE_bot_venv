@@ -14,8 +14,9 @@ LINE_CHANNEL_ACCESS_TOKEN = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]
 LINE_CHANNEL_SECRET = os.environ["LINE_CHANNEL_SECRET"]
 DATABASE_URL = os.environ["DATABASE_URL"]
 RENDER_APP_NAME = os.environ["RENDER_APP_NAME"]
+averagetemp = os.environ.get('AVERAGETEMP', None)
 
-averagetemp = None  # デフォルト値を設定
+#averagetemp = None  # デフォルト値を設定
 
 app = Flask(__name__)
 RENDER = "https://hiuser-linebot-sotuken2.onrender.com/".format(RENDER_APP_NAME)
@@ -65,8 +66,9 @@ def update_averagetemp():
     try:
         data = request.json
         averagetemp = data.get('averagetemp')
+        os.environ['AVERAGETEMP'] = str(averagetemp)
         app.logger.info(f'Received averagetemp: {averagetemp}')
-        return {'status': 'success'} & print("返信完了!!\ntext:", averagetemp)
+        return {'status': 'success'}
     except Exception as e:
         return {'status': 'error', 'message': str(e)}
 
