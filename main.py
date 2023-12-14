@@ -66,7 +66,7 @@ def update_averagetemp():
         data = request.json
         averagetemp = data.get('averagetemp')
         app.logger.info(f'Received averagetemp: {averagetemp}')
-        return {'status': 'success'}
+        return {'status': 'success'} & print("返信完了!!\ntext:", averagetemp)
     except Exception as e:
         return {'status': 'error', 'message': str(e)}
 
