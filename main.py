@@ -71,6 +71,7 @@ def update_averagetemp():
         app.logger.info(f'Received averagetemp: {averagetemp2}')
         return {'status': 'success'}
     except Exception as e:
+        print(f'Error: {str(e)}') 
         return {'status': 'error', 'message': str(e)}
 
 if __name__ == "__main__":
