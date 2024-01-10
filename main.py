@@ -59,6 +59,18 @@ def handle_message(event):
         else:
             reply_text = f'温度データはありません。{averagetemp}'
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
+    
+    if message_text.lower() == '画像':
+        # 画像を返信
+        reply_image(event.reply_token)
+
+# 画像を返信する関数
+def reply_image(reply_token):
+    image_url = image_path  # 画像のURLを指定
+    line_bot_api.reply_message(
+        reply_token,
+        ImageSendMessage(original_content_url=image_url, preview_image_url=image_url)
+    )
 
 # averagetempを更新するエンドポイント
 @app.route('/update_averagetemp', methods=['POST'])
@@ -73,6 +85,21 @@ def update_averagetemp():
     except Exception as e:
         print(f'Error: {str(e)}') 
         return {'status': 'error', 'message': str(e)}
+
+# エンドポイント：画像を受け取り、LINEに返信
+@app.route('/process_image', methods=['POST'])
+def process_image():
+    # 画像を受け取る
+    file = request.files['image']
+    
+    # 画像を保存
+    image_path = os.path.join(UPLOAD_FOLDER, 'received_image.jpg')
+    file.save(image_path)
+
+    # LINEにメッセージと画像を送信
+    send_line_message(image_path)
+
+    return jsonify({'message': 'Image received and processed successfully'})
 
 if __name__ == "__main__":
     app.run(debug=False)
