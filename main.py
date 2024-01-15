@@ -91,7 +91,7 @@ def receive_image():
         return 'No selected file', 400
     if file:
         filename = 'received_image.jpg'  # 保存するファイル名
-        file.save(os.path.join('path/to/save', filename))  # 保存先ディレクトリ
+        file.save(os.path.join('static/images', filename))  # 保存先ディレクトリ
         return 'File successfully saved', 200
 
 if __name__ == "__main__":
