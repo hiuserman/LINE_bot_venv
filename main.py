@@ -62,23 +62,12 @@ def handle_message(event):
         # 画像ファイルのパスを指定
         image_path = 'static/images/received_image.jpg'
         image_message = ImageSendMessage(
-            original_content_url='https://hiuser-linebot-sotuken2.onrender.com/static/images/received_image.jpg',
-            preview_image_url='https://hiuser-linebot-sotuken2.onrender.com/static/images/received_image.jpg'
+            #original_content_url='https://hiuser-linebot-sotuken2.onrender.com/static/images/received_image.jpg',
+            #preview_image_url='https://hiuser-linebot-sotuken2.onrender.com/static/images/received_image.jpg'
+            original_content_url='{}/{}'.format(RENDER_APP_NAME, image_path),
+            preview_image_url='{}/{}'.format(RENDER_APP_NAME, image_path)
         )
-        line_bot_api.reply_message(event.reply_token, image_message)
-    
-@handler.add(MessageEvent, message=ImageMessage)
-def handle_image(event):
-    message_text = event.message.text
-    if message_text.lower() == '画像ください':
-        # 画像ファイルのパスを指定
-        image_path = 'static/images/received_image.jpg'
-        image_message = ImageSendMessage(
-            original_content_url='https://hiuser-linebot-sotuken2.onrender.com/static/images/received_image.jpg',
-            preview_image_url='https://hiuser-linebot-sotuken2.onrender.com/static/images/received_image.jpg'
-        )
-        line_bot_api.reply_message(event.reply_token, image_message)
-        
+        line_bot_api.reply_message(event.reply_token, image_message)    
     
 # averagetempを更新するエンドポイント
 @app.route('/update_averagetemp', methods=['POST'])
