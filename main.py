@@ -66,8 +66,8 @@ def handle_message(event):
         # 画像ファイルのパスを指定
         image_path = 'static/images/received_image.jpg'
         image_message = ImageSendMessage(
-            original_content_url='https://{}/{}'.format(RENDER_APP_NAME, image_path),
-            preview_image_url='https://{}/{}'.format(RENDER_APP_NAME, image_path)
+            original_content_url='https://hiuser-linebot-sotuken2.onrender.com/static/images/received_image.jpg',
+            preview_image_url='https://hiuser-linebot-sotuken2.onrender.com/static/images/received_image.jpg'
         )
         line_bot_api.reply_message(event.reply_token, image_message)
         
