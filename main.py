@@ -16,7 +16,6 @@ DATABASE_URL = os.environ["DATABASE_URL"]
 RENDER_APP_NAME = os.environ["RENDER_APP_NAME"]
 averagetemp = os.environ["AVERAGETEMP"]
 
-
 #averagetemp = None  # デフォルト値を設定
 
 app = Flask(__name__)
@@ -60,17 +59,14 @@ def handle_message(event):
             reply_text = f'温度データはありません。{averagetemp}'
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
     
-    if message_text.lower() == '画像':
-        # 画像を返信
-        reply_image(event.reply_token)
-
-# 画像を返信する関数
-def reply_image(reply_token):
-    image_url = image_path  # 画像のURLを指定
-    line_bot_api.reply_message(
-        reply_token,
-        ImageSendMessage(original_content_url=image_url, preview_image_url=image_url)
-    )
+    elif message_text.lower() == '画像':
+        # 画像ファイルのパスを指定
+        image_path = 'path/to/save/received_image.jpg'
+        image_message = ImageSendMessage(
+            original_content_url='https://{}/{}'.format(RENDER_APP_NAME, image_path),
+            preview_image_url='https://{}/{}'.format(RENDER_APP_NAME, image_path)
+        )
+        line_bot_api.reply_message(event.reply_token, image_message)
 
 # averagetempを更新するエンドポイント
 @app.route('/update_averagetemp', methods=['POST'])
@@ -85,21 +81,18 @@ def update_averagetemp():
     except Exception as e:
         print(f'Error: {str(e)}') 
         return {'status': 'error', 'message': str(e)}
-
-# エンドポイント：画像を受け取り、LINEに返信
-@app.route('/process_image', methods=['POST'])
-def process_image():
-    # 画像を受け取る
-    file = request.files['image']
     
-    # 画像を保存
-    image_path = os.path.join(UPLOAD_FOLDER, 'received_image.jpg')
-    file.save(image_path)
-
-    # LINEにメッセージと画像を送信
-    send_line_message(image_path)
-
-    return jsonify({'message': 'Image received and processed successfully'})
+@app.route('/receive_image', methods=['POST'])
+def receive_image():
+    if 'file' not in request.files:
+        return 'No file part', 400
+    file = request.files['file']
+    if file.filename == '':
+        return 'No selected file', 400
+    if file:
+        filename = 'received_image.jpg'  # 保存するファイル名
+        file.save(os.path.join('path/to/save', filename))  # 保存先ディレクトリ
+        return 'File successfully saved', 200
 
 if __name__ == "__main__":
     app.run(debug=False)
