@@ -58,11 +58,19 @@ def handle_message(event):
         else:
             reply_text = f'温度データはありません。{averagetemp}'
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
+    elif message_text.lower() == '画像':
+        # 画像ファイルのパスを指定
+        image_path = 'static/images/received_image.jpg'
+        image_message = ImageSendMessage(
+            original_content_url='https://hiuser-linebot-sotuken2.onrender.com/static/images/received_image.jpg',
+            preview_image_url='https://hiuser-linebot-sotuken2.onrender.com/static/images/received_image.jpg'
+        )
+        line_bot_api.reply_message(event.reply_token, image_message)
     
 @handler.add(MessageEvent, message=ImageMessage)
-def handle_message(event):
+def handle_image(event):
     message_text = event.message.text
-    if message_text.lower() == '画像':
+    if message_text.lower() == '画像ください':
         # 画像ファイルのパスを指定
         image_path = 'static/images/received_image.jpg'
         image_message = ImageSendMessage(
