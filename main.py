@@ -90,8 +90,11 @@ def receive_image():
     if file.filename == '':
         return 'No selected file', 400
     if file:
+        size = 800
+        proportion = size / file.width
+        refile = file.resize((int(file.width * proportion), int(file.height * proportion)))   
         filename = 'received_image.jpg'  # 保存するファイル名
-        file.save(os.path.join('static/images', filename))  # 保存先ディレクトリ
+        refile.save(os.path.join('static/images', filename))  # 保存先ディレクトリ
         return 'File successfully saved', 200
 
 if __name__ == "__main__":
