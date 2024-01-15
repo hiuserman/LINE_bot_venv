@@ -59,7 +59,10 @@ def handle_message(event):
             reply_text = f'温度データはありません。{averagetemp}'
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
     
-    elif message_text.lower() == '画像':
+@handler.add(MessageEvent, message=ImageMessage)
+def handle_message(event):
+    message_text = event.message.text
+    if message_text.lower() == '画像':
         # 画像ファイルのパスを指定
         image_path = 'static/images/received_image.jpg'
         image_message = ImageSendMessage(
@@ -67,7 +70,8 @@ def handle_message(event):
             preview_image_url='https://{}/{}'.format(RENDER_APP_NAME, image_path)
         )
         line_bot_api.reply_message(event.reply_token, image_message)
-
+        
+    
 # averagetempを更新するエンドポイント
 @app.route('/update_averagetemp', methods=['POST'])
 def update_averagetemp():
@@ -90,11 +94,8 @@ def receive_image():
     if file.filename == '':
         return 'No selected file', 400
     if file:
-        size = 800
-        proportion = size / file.width
-        refile = file.resize((int(file.width * proportion), int(file.height * proportion)))   
         filename = 'received_image.jpg'  # 保存するファイル名
-        refile.save(os.path.join('static/images', filename))  # 保存先ディレクトリ
+        file.save(os.path.join('static/images', filename))  # 保存先ディレクトリ
         return 'File successfully saved', 200
 
 if __name__ == "__main__":
