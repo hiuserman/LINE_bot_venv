@@ -61,7 +61,7 @@ def handle_message(event):
     
     elif message_text.lower() == '画像':
         # 画像ファイルのパスを指定
-        image_path = 'path/to/save/received_image.jpg'
+        image_path = 'static/images/received_image.jpg'
         image_message = ImageSendMessage(
             original_content_url='https://{}/{}'.format(RENDER_APP_NAME, image_path),
             preview_image_url='https://{}/{}'.format(RENDER_APP_NAME, image_path)
