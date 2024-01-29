@@ -23,6 +23,9 @@ averagetemp = os.environ["AVERAGETEMP"]
 app = Flask(__name__)
 RENDER = "https://hiuser-linebot-sotuken2.onrender.com/".format(RENDER_APP_NAME)
 
+mp_pose = mp.solutions.pose
+pose = mp_pose.Pose()
+
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
 
@@ -62,7 +65,7 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
     elif message_text.lower() == '画像':
         # 画像ファイルのパスを指定
-        image_path = 'static/images/received_image.jpg'
+        image_path = 'static/images/received_image2.jpg'
         image_message = ImageSendMessage(
             #original_content_url='https://hiuser-linebot-sotuken2.onrender.com/static/images/received_image.jpg',
             #preview_image_url='https://hiuser-linebot-sotuken2.onrender.com/static/images/received_image.jpg'
@@ -95,13 +98,12 @@ def receive_image():
     if file:
         filename = 'received_image.jpg'  # 保存するファイル名
         file.save(os.path.join('static/images', filename))  # 保存先ディレクトリ
-        mp_pose = mp.solutions.pose
-        pose = mp_pose.Pose()
-        results = pose.process(filename) #ポーズ検出
+        image = cv2.imread(filename)
+        results = pose.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB)) #ポーズ検出
         mp.solutions.drawing_utils.draw_landmarks(
-        filename, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)#描画
+        image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)#描画
         # 画像ファイルとして保存
-        cv2.imwrite(os.path.join('static/images', 'plotimage.jpg'), filename)
+        cv2.imwrite(os.path.join('static/images', 'received_image2.jpg'), filename)
         return 'File successfully saved', 200
 
 if __name__ == "__main__":
