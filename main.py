@@ -98,7 +98,7 @@ def receive_image():
     if file:
         filename = 'received_image.jpg'  # 保存するファイル名
         file.save(os.path.join('static/images', filename))  # 保存先ディレクトリ
-        image = cv2.imread(filename)
+        image = cv2.imread('static/images/received_image.jpg')
         results = pose.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB)) #ポーズ検出
         mp.solutions.drawing_utils.draw_landmarks(
         image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)#描画
