@@ -98,13 +98,21 @@ def receive_image():
     if file:
         filename = 'received_image.jpg'  # 保存するファイル名
         file.save(os.path.join('static/images', filename))  # 保存先ディレクトリ
-        image = cv2.imread('static/images/received_image.jpg')
+        image = cv2.imread(os.path.join('static/images', filename))
+
+        if image is None:
+            return 'Failed to load the image', 400
+
         results = pose.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB)) #ポーズ検出
-        mp.solutions.drawing_utils.draw_landmarks(
-        image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)#描画
-        # 画像ファイルとして保存
-        cv2.imwrite(os.path.join('static/images', 'received_image2.jpg'), filename)
-        return 'File successfully saved', 200
+        if results.pose_landmarks:
+            mp.solutions.drawing_utils.draw_landmarks(
+                image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS) #描画
+            cv2.imwrite(os.path.join('static/images', 'received_image2.jpg'), image)
+            return 'File successfully saved', 200
+        else:
+            return 'No pose detected', 400
+    return 'Unknown error', 500
+
 
 if __name__ == "__main__":
     app.run(debug=False)
