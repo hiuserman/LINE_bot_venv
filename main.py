@@ -8,6 +8,8 @@ from PIL import Image
 from io import BytesIO
 import psycopg2
 import json
+import cv2
+import mediapipe as mp
 
 
 LINE_CHANNEL_ACCESS_TOKEN = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]
@@ -93,6 +95,13 @@ def receive_image():
     if file:
         filename = 'received_image.jpg'  # 保存するファイル名
         file.save(os.path.join('static/images', filename))  # 保存先ディレクトリ
+        mp_pose = mp.solutions.pose
+        pose = mp_pose.Pose()
+        results = pose.process(filename) #ポーズ検出
+        mp.solutions.drawing_utils.draw_landmarks(
+        filename, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)#描画
+        # 画像ファイルとして保存
+        cv2.imwrite(os.path.join('static/images', 'plotimage.jpg'), filename)
         return 'File successfully saved', 200
 
 if __name__ == "__main__":
