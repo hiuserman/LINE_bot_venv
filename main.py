@@ -22,8 +22,6 @@ averagetemp = os.environ["AVERAGETEMP"]
 
 app = Flask(__name__)
 RENDER = "https://hiuser-linebot-sotuken2.onrender.com/".format(RENDER_APP_NAME)
-mp_pose = mp.solutions.pose
-pose = mp_pose.Pose()
 
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
@@ -97,21 +95,7 @@ def receive_image():
     if file:
         filename = 'received_image.jpg'  # 保存するファイル名
         file.save(os.path.join('static/images', filename))  # 保存先ディレクトリ
-        image = cv2.imread(os.path.join('static/images', filename))
-
-        if image is None:
-            return 'Failed to load the image', 400
-
-        results = pose.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB)) #ポーズ検出
-        if results.pose_landmarks:
-            mp.solutions.drawing_utils.draw_landmarks(
-                image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS) #描画
-            cv2.imwrite(os.path.join('static/images', 'received_image2.jpg'), image)
-            return 'File successfully saved', 200
-        else:
-            return 'No pose detected', 400
-    return 'Unknown error', 500
-
+        return 'File successfully saved', 200
 
 if __name__ == "__main__":
     app.run(debug=False)
