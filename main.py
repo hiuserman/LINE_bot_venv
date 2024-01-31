@@ -70,7 +70,25 @@ def handle_message(event):
             #preview_image_url='{}/{}'.format(RENDER_APP_NAME, image_path)
         )
         line_bot_api.reply_message(event.reply_token, image_message)    
-    
+
+def process_image(file_path):
+    mp_pose = mp.solutions.pose
+    pose = mp_pose.Pose()
+    image = cv2.imread(file_path)
+    if image is None:
+        return 'Failed to load the image', 400
+
+    results = pose.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB)) # ポーズ検出
+    if results.pose_landmarks:
+        mp.solutions.drawing_utils.draw_landmarks(
+            image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS) # 描画
+        output_path = os.path.join('static/images', 'processed_image.jpg')
+        cv2.imwrite(output_path, image)
+        return 'File successfully processed', 200
+    else:
+        return 'No pose detected', 400
+
+  
 # averagetempを更新するエンドポイント
 @app.route('/update_averagetemp', methods=['POST'])
 def update_averagetemp():
@@ -94,8 +112,9 @@ def receive_image():
         return 'No selected file', 400
     if file:
         filename = 'received_image.jpg'  # 保存するファイル名
-        file.save(os.path.join('static/images', filename))  # 保存先ディレクトリ
-        return 'File successfully saved', 200
+        file_path = os.path.join('static/images', filename)
+        file.save(file_path)  # 保存先ディレクトリ
+        return process_image(file_path)
 
 if __name__ == "__main__":
     app.run(debug=False)
