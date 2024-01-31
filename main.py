@@ -80,13 +80,17 @@ def process_image(file_path):
 
     results = pose.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB)) # ポーズ検出
     if results.pose_landmarks:
+        # ポーズ検出された点を描画
         mp.solutions.drawing_utils.draw_landmarks(
-            image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS) # 描画
-        output_path = os.path.join('static/images', 'processed_image.jpg')
+            image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+
+        # 描画された画像を新しいファイル名で保存
+        output_path = os.path.join('static/images', 'received_image2.jpg')
         cv2.imwrite(output_path, image)
-        return 'File successfully processed', 200
+        return 'File successfully processed and saved as received_image2.jpg', 200
     else:
         return 'No pose detected', 400
+
 
   
 # averagetempを更新するエンドポイント
