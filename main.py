@@ -62,7 +62,7 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
     elif message_text.lower() == '画像':
         # 画像ファイルのパスを指定
-        image_path = 'static/images/received_image.jpg'
+        image_path = 'static/images/received_image2.jpg'
         image_message = ImageSendMessage(
             original_content_url='https://hiuser-linebot-sotuken2.onrender.com/static/images/received_image.jpg',
             preview_image_url='https://hiuser-linebot-sotuken2.onrender.com/static/images/received_image.jpg'
@@ -91,8 +91,6 @@ def process_image(file_path):
     else:
         return 'No pose detected', 400
 
-
-  
 # averagetempを更新するエンドポイント
 @app.route('/update_averagetemp', methods=['POST'])
 def update_averagetemp():
