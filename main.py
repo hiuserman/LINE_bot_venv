@@ -73,15 +73,24 @@ def handle_message(event):
             #preview_image_url='{}/{}'.format(RENDER_APP_NAME, image_path)
         )
         line_bot_api.reply_message(event.reply_token, image_message)   
+        
+@app.route("/webhook", methods=['POST'])
+def webhook():
+    data = request.json
+    for event in data["events"]:
+        user_id = event["source"]["userId"]
+        if float(high_temp) > 30:
+            send_line_message("暑いですね！温度が30度を超えました。",user_id)
+    return jsonify(status="success"), 200
 
-def send_line_message(message):
+def send_line_message(message,id):
     line_token = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]  # LINEのアクセストークン
     headers = {
         "Authorization": f"Bearer {line_token}",
         "Content-Type": "application/json"
     }
     data = {
-        "to": "ユーザーまたはグループID",
+        "to": id,
         "messages": [
             {
                 "type": "text",
@@ -140,8 +149,6 @@ def update_temperatures():
         os.environ['LOWTEMP'] = str(low_temp)
         os.environ['MEDTEMP'] = str(med_temp)
         app.logger.info(f'Received temp: {med_temp}')
-        if float(high_temp) > 30:
-            send_line_message("暑いですね！温度が30度を超えました。")
         return {'status': 'success'}
     except Exception as e:
         print(f'Error: {str(e)}') 
