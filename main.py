@@ -51,7 +51,8 @@ def callback():
 # メッセージイベントのハンドリング
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    global averagetemp
+    #global averagetemp
+    user_id = event.source.user_id
     message_text = event.message.text
     if message_text.lower() == '温度':
         if med_temp != None:
@@ -69,15 +70,9 @@ def handle_message(event):
             #preview_image_url='{}/{}'.format(RENDER_APP_NAME, image_path)
         )
         line_bot_api.reply_message(event.reply_token, image_message)   
-        
-@app.route("/webhook", methods=['POST'])
-def webhook():
-    data = request.json
-    for event in data["events"]:
-        user_id = event["source"]["userId"]
-        if float(high_temp) > 30:
-            send_line_message("暑いですね！温度が30度を超えました。")
-    return jsonify(status="success"), 200
+    elif high_temp and float(high_temp) > 30:
+        message = "暑いですね！温度が30度を超えました。"
+        line_bot_api.push_message(user_id, TextSendMessage(text=message))
 
 def send_line_message(message):
     line_token = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]  # LINEのアクセストークン
@@ -118,7 +113,8 @@ def process_image(file_path):
     else:
         return 'No pose detected', 400
 
-# averagetempを更新するエンドポイント
+"""
+averagetempを更新するエンドポイント
 @app.route('/update_averagetemp', methods=['POST'])
 def update_averagetemp():
     global averagetemp
@@ -130,7 +126,8 @@ def update_averagetemp():
         return {'status': 'success'}
     except Exception as e:
         print(f'Error: {str(e)}') 
-        return {'status': 'error', 'message': str(e)}
+        return {'status': 'error', 'message': str(e)} 
+"""
 
 @app.route('/update_temperatures', methods=['POST'])
 def update_temperatures():
@@ -144,8 +141,8 @@ def update_temperatures():
         os.environ['HIGHTEMP'] = str(high_temp)
         os.environ['LOWTEMP'] = str(low_temp)
         os.environ['MEDTEMP'] = str(med_temp)
-        if float(high_temp) > 30:
-            send_line_message("暑いですね！温度が30度を超えました。")
+        #if float(high_temp) > 30:
+            #send_line_message("暑いですね！温度が30度を超えました。")
         app.logger.info(f'Received temp: {med_temp}')
         return {'status': 'success'}
     except Exception as e:
