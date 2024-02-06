@@ -140,8 +140,8 @@ def update_temperatures():
         os.environ['LOWTEMP'] = str(low_temp)
         os.environ['MEDTEMP'] = str(med_temp)
         app.logger.info(f'Received temp: {med_temp}')
-        if float(high_temp) > 50:
-        send_line_message("暑いですね！温度が50度を超えました。")
+        if float(high_temp) > 30:
+            send_line_message("暑いですね！温度が30度を超えました。")
         return {'status': 'success'}
     except Exception as e:
         print(f'Error: {str(e)}') 
