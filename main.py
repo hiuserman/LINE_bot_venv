@@ -27,7 +27,7 @@ line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
 
 header = {
-    "Content_Type": "application/json",
+    "Content-Type": "application/json",
     "Authorization": "Bearer " + LINE_CHANNEL_ACCESS_TOKEN
 }
 
@@ -55,10 +55,10 @@ def handle_message(event):
     global averagetemp
     message_text = event.message.text
     if message_text.lower() == '温度':
-        if averagetemp is not None:
-            reply_text = f'現在の温度は {averagetemp} 度です。'
+        if med_temp != None:
+            reply_text = f'現在の温度は {med_temp} 度です。'
         else:
-            reply_text = f'温度データはありません。{averagetemp}'
+            reply_text = f'温度データはありません。{med_temp}'
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
     elif message_text.lower() == '画像':
         # 画像ファイルのパスを指定
@@ -104,7 +104,25 @@ def update_averagetemp():
     except Exception as e:
         print(f'Error: {str(e)}') 
         return {'status': 'error', 'message': str(e)}
-    
+
+@app.route('/update_temperatures', methods=['POST'])
+def update_temperatures():
+    global med_temp,high_temp,low_temp
+    try:
+        data = request.json
+        high_temp = data.get('med_temp')
+        low_temp = data.get('high_temp')
+        med_temp = data.get('low_temp')
+        # 環境変数に温度データを設定
+        os.environ['HIGHTEMP'] = str(high_temp)
+        os.environ['LOWTEMP'] = str(low_temp)
+        os.environ['MEDTEMP'] = str(med_temp)
+        app.logger.info(f'Received temp: {med_temp}')
+        return {'status': 'success'}
+    except Exception as e:
+        print(f'Error: {str(e)}') 
+        return {'status': 'error', 'message': str(e)}
+   
 @app.route('/receive_image', methods=['POST'])
 def receive_image():
     if 'file' not in request.files:
