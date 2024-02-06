@@ -58,7 +58,7 @@ def handle_message(event):
     global averagetemp
     message_text = event.message.text
     if message_text.lower() == '温度':
-        if med_temp is not None:
+        if med_temp != None:
             reply_text = f'現在の温度は {med_temp} 度です。'
         else:
             reply_text = f'温度データはありません。{med_temp}'
