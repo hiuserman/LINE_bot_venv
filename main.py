@@ -17,6 +17,9 @@ LINE_CHANNEL_SECRET = os.environ["LINE_CHANNEL_SECRET"]
 DATABASE_URL = os.environ["DATABASE_URL"]
 RENDER_APP_NAME = os.environ["RENDER_APP_NAME"]
 averagetemp = os.environ["AVERAGETEMP"]
+high_temp =  os.environ['HIGHTEMP'] 
+low_temp =  os.environ['LOWTEMP'] 
+med_temp = os.environ['MEDTEMP']
 
 #averagetemp = None  # デフォルト値を設定
 
