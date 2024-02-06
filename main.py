@@ -56,7 +56,7 @@ def handle_message(event):
     message_text = event.message.text
     if message_text.lower() == '温度':
         if med_temp != None:
-            reply_text = f'現在の温度は {med_temp} 度です。'
+            reply_text = f'現在の温度は {user_id} 度です。'
         else:
             reply_text = f'温度データはありません。'
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
@@ -70,7 +70,7 @@ def handle_message(event):
             #preview_image_url='{}/{}'.format(RENDER_APP_NAME, image_path)
         )
         line_bot_api.reply_message(event.reply_token, image_message)   
-    elif high_temp and float(high_temp) > 30:
+    if float(high_temp) > 30:
         message = "暑いですね！温度が30度を超えました。"
         line_bot_api.push_message(user_id, TextSendMessage(text=message))
 
