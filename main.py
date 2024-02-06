@@ -34,10 +34,6 @@ header = {
     "Authorization": "Bearer " + LINE_CHANNEL_ACCESS_TOKEN
 }
 
-@app.route("/")
-def hello_world():
-    return "hello world!"
-
 # LINEからのWebhookを受け付けるエンドポイント
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -80,17 +76,17 @@ def webhook():
     for event in data["events"]:
         user_id = event["source"]["userId"]
         if float(high_temp) > 30:
-            send_line_message("暑いですね！温度が30度を超えました。",user_id)
+            send_line_message("暑いですね！温度が30度を超えました。")
     return jsonify(status="success"), 200
 
-def send_line_message(message,id):
+def send_line_message(message):
     line_token = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]  # LINEのアクセストークン
     headers = {
         "Authorization": f"Bearer {line_token}",
         "Content-Type": "application/json"
     }
     data = {
-        "to": id,
+        "to":  "Ub5f08338a457f448d63159f051119033",
         "messages": [
             {
                 "type": "text",
@@ -148,6 +144,8 @@ def update_temperatures():
         os.environ['HIGHTEMP'] = str(high_temp)
         os.environ['LOWTEMP'] = str(low_temp)
         os.environ['MEDTEMP'] = str(med_temp)
+        if float(high_temp) > 30:
+            send_line_message("暑いですね！温度が30度を超えました。")
         app.logger.info(f'Received temp: {med_temp}')
         return {'status': 'success'}
     except Exception as e:
