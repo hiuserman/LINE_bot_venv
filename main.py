@@ -61,7 +61,7 @@ def handle_message(event):
         if med_temp != None:
             reply_text = f'現在の温度は {med_temp} 度です。'
         else:
-            reply_text = f'温度データはありません。{med_temp}'
+            reply_text = f'温度データはありません。'
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
     elif message_text.lower() == '画像':
         # 画像ファイルのパスを指定
@@ -72,7 +72,26 @@ def handle_message(event):
             #original_content_url='{}/{}'.format(RENDER_APP_NAME, image_path),
             #preview_image_url='{}/{}'.format(RENDER_APP_NAME, image_path)
         )
-        line_bot_api.reply_message(event.reply_token, image_message)    
+        line_bot_api.reply_message(event.reply_token, image_message)   
+
+def send_line_message(message):
+    line_token = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]  # LINEのアクセストークン
+    headers = {
+        "Authorization": f"Bearer {line_token}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "to": "ユーザーまたはグループID",
+        "messages": [
+            {
+                "type": "text",
+                "text": message
+            }
+        ]
+    }
+    response = requests.post("https://api.line.me/v2/bot/message/push", headers=headers, json=data)
+    if response.status_code != 200:
+        print(f"Failed to send message: {response.text}")
 
 def process_image(file_path):
     mp_pose = mp.solutions.pose
@@ -113,14 +132,16 @@ def update_temperatures():
     global med_temp,high_temp,low_temp
     try:
         data = request.json
-        high_temp = data.get('med_temp')
-        low_temp = data.get('high_temp')
-        med_temp = data.get('low_temp')
+        high_temp = data.get('high_temp')
+        low_temp = data.get('low_temp')
+        med_temp = data.get('med_temp')
         # 環境変数に温度データを設定
         os.environ['HIGHTEMP'] = str(high_temp)
         os.environ['LOWTEMP'] = str(low_temp)
         os.environ['MEDTEMP'] = str(med_temp)
         app.logger.info(f'Received temp: {med_temp}')
+        if float(high_temp) > 50:
+        send_line_message("暑いですね！温度が50度を超えました。")
         return {'status': 'success'}
     except Exception as e:
         print(f'Error: {str(e)}') 
