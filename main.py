@@ -22,6 +22,7 @@ low_temp =  os.environ['LOWTEMP']
 med_temp = os.environ['MEDTEMP']
 
 #averagetemp = None  # デフォルト値を設定
+current_user_id = None
 
 app = Flask(__name__)
 RENDER = "https://hiuser-linebot-sotuken2.onrender.com/".format(RENDER_APP_NAME)
@@ -37,6 +38,7 @@ header = {
 # LINEからのWebhookを受け付けるエンドポイント
 @app.route("/callback", methods=['POST'])
 def callback():
+    global current_user_id
     signature = request.headers['X-Line-Signature']
     body = request.get_data(as_text=True)
     app.logger.info("Request body: " + body)
@@ -52,7 +54,9 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     #global averagetemp
+    global current_user_id 
     user_id = event.source.user_id
+    current_user_id = user_id
     message_text = event.message.text
     if message_text.lower() == '温度':
         if med_temp is not None:
@@ -70,9 +74,6 @@ def handle_message(event):
             #preview_image_url='{}/{}'.format(RENDER_APP_NAME, image_path)
         )
         line_bot_api.reply_message(event.reply_token, image_message)   
-    if float(high_temp) > 30:
-        message = "暑いですね！温度が30度を超えました。"
-        line_bot_api.push_message(user_id, TextSendMessage(text=message))
 
 def send_line_message(message):
     line_token = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]  # LINEのアクセストークン
@@ -132,6 +133,7 @@ def update_averagetemp():
 @app.route('/update_temperatures', methods=['POST'])
 def update_temperatures():
     global med_temp,high_temp,low_temp
+    global current_user_id
     try:
         data = request.json
         high_temp = data.get('high_temp')
@@ -141,8 +143,9 @@ def update_temperatures():
         os.environ['HIGHTEMP'] = str(high_temp)
         os.environ['LOWTEMP'] = str(low_temp)
         os.environ['MEDTEMP'] = str(med_temp)
-        #if float(high_temp) > 30:
-            #send_line_message("暑いですね！温度が30度を超えました。")
+        if float(high_temp) > 30:
+            message = "暑いですね！温度が30度を超えました。"
+            line_bot_api.push_message(current_user_id, TextSendMessage(text=message))
         app.logger.info(f'Received temp: {med_temp}')
         return {'status': 'success'}
     except Exception as e:
