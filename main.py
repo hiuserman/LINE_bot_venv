@@ -16,11 +16,11 @@ LINE_CHANNEL_ACCESS_TOKEN = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]
 LINE_CHANNEL_SECRET = os.environ["LINE_CHANNEL_SECRET"]
 DATABASE_URL = os.environ["DATABASE_URL"]
 RENDER_APP_NAME = os.environ["RENDER_APP_NAME"]
-#averagetemp = os.environ["AVERAGETEMP"]
+average_temp = os.environ["AVERAGETEMP"]
 high_temp =  os.environ['HIGHTEMP'] 
 low_temp =  os.environ['LOWTEMP'] 
 med_temp = os.environ['MEDTEMP']
-tmp =  os.environ['TMP'] 
+tmp = os.environ['TMP']
 hum = os.environ['HUM']
 
 #averagetemp = None  # デフォルト値を設定
@@ -61,7 +61,7 @@ def handle_message(event):
     current_user_id = user_id
     message_text = event.message.text
     if message_text.lower() == '温度':
-        if tmp is not None:
+        if tmp != "None":
             reply_text = f'現在の温度は {tmp} 度です。'
         else:
             reply_text = f'温度データはありません。'
@@ -73,7 +73,7 @@ def handle_message(event):
             original_content_url='https://hiuser-linebot-sotuken2.onrender.com/static/images/received_image2.jpg',
             preview_image_url='https://hiuser-linebot-sotuken2.onrender.com/static/images/received_image2.jpg'
             #original_content_url='{}/{}'.format(RENDER_APP_NAME, image_path),
-            #preview_image_url='{}/{}'.format(RENDER_APP_NAME, image_path)
+            #preview_image_url='{}/{}'.format(RENDER_APP_NAME, image_path) なぜか直接指定しないと動かない
         )
         line_bot_api.reply_message(event.reply_token, image_message)   
         
@@ -97,39 +97,41 @@ def process_image(file_path):
     else:
         return 'No pose detected', 400
 
-"""
-averagetempを更新するエンドポイント
-@app.route('/update_averagetemp', methods=['POST'])
-def update_averagetemp():
-    global averagetemp
+
+@app.route('/update_env', methods=['POST'])
+def update_env():
+    global tmp,hum
     try:
         data = request.json
-        averagetemp = data.get('averagetemp')
-        os.environ['AVERAGETEMP'] = str(averagetemp)
-        app.logger.info(f'Received averagetemp: {averagetemp}')
+        tmp = data.get('tmp')
+        hum = data.get('hum')
+        
+        os.environ['TMP'] = str(tmp)
+        os.environ['HUM'] = str(hum)
+        
+        app.logger.info(f'Received temp: {tmp}')
         return {'status': 'success'}
     except Exception as e:
         print(f'Error: {str(e)}') 
         return {'status': 'error', 'message': str(e)} 
-"""
 
 @app.route('/update_temperatures', methods=['POST'])
 def update_temperatures():
-    global med_temp,high_temp,low_temp
+    global med_temp,high_temp,low_temp,average_temp
     global current_user_id
     try:
         data = request.json
         high_temp = data.get('high_temp')
         low_temp = data.get('low_temp')
         med_temp = data.get('med_temp')
-        tmp = data.get('tmp')
-        hum = data.get('hum')
+        average_temp = data.get('average_temp')
+        
         # 環境変数に温度データを設定
         os.environ['HIGHTEMP'] = str(high_temp)
         os.environ['LOWTEMP'] = str(low_temp)
         os.environ['MEDTEMP'] = str(med_temp)
-        os.environ['TMP'] = str(tmp)
-        os.environ['HUM'] = str(hum)
+        os.environ['AVERAGETEMP'] = str(average_temp)
+        
         if float(high_temp) > 100:
             message = "温度が100度を超えている場所があります。大丈夫ですか？"
             line_bot_api.push_message(current_user_id, TextSendMessage(text=message))
