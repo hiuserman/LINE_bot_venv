@@ -61,7 +61,7 @@ def handle_message(event):
     current_user_id = user_id
     message_text = event.message.text
     if message_text.lower() == '温度':
-        if med_temp is not None:
+        if tmp is not None:
             reply_text = f'現在の温度は {tmp} 度です。'
         else:
             reply_text = f'温度データはありません。'
