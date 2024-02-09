@@ -16,10 +16,12 @@ LINE_CHANNEL_ACCESS_TOKEN = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]
 LINE_CHANNEL_SECRET = os.environ["LINE_CHANNEL_SECRET"]
 DATABASE_URL = os.environ["DATABASE_URL"]
 RENDER_APP_NAME = os.environ["RENDER_APP_NAME"]
-averagetemp = os.environ["AVERAGETEMP"]
+#averagetemp = os.environ["AVERAGETEMP"]
 high_temp =  os.environ['HIGHTEMP'] 
 low_temp =  os.environ['LOWTEMP'] 
 med_temp = os.environ['MEDTEMP']
+tmp =  os.environ['TMP'] 
+hum = os.environ['HUM']
 
 #averagetemp = None  # デフォルト値を設定
 current_user_id = None
@@ -74,26 +76,7 @@ def handle_message(event):
             #preview_image_url='{}/{}'.format(RENDER_APP_NAME, image_path)
         )
         line_bot_api.reply_message(event.reply_token, image_message)   
-
-def send_line_message(message):
-    line_token = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]  # LINEのアクセストークン
-    headers = {
-        "Authorization": f"Bearer {line_token}",
-        "Content-Type": "application/json"
-    }
-    data = {
-        "to":  "Ub5f08338a457f448d63159f051119033",
-        "messages": [
-            {
-                "type": "text",
-                "text": message
-            }
-        ]
-    }
-    response = requests.post("https://api.line.me/v2/bot/message/push", headers=headers, json=data)
-    if response.status_code != 200:
-        print(f"Failed to send message: {response.text}")
-
+        
 def process_image(file_path):
     mp_pose = mp.solutions.pose
     pose = mp_pose.Pose()
@@ -139,12 +122,16 @@ def update_temperatures():
         high_temp = data.get('high_temp')
         low_temp = data.get('low_temp')
         med_temp = data.get('med_temp')
+        tmp = data.get('tmp')
+        hum = data.get('hum')
         # 環境変数に温度データを設定
         os.environ['HIGHTEMP'] = str(high_temp)
         os.environ['LOWTEMP'] = str(low_temp)
         os.environ['MEDTEMP'] = str(med_temp)
-        if float(high_temp) > 30:
-            message = "暑いですね！温度が30度を超えました。"
+        os.environ['TMP'] = str(tmp)
+        os.environ['HUM'] = str(hum)
+        if float(high_temp) > 100:
+            message = "温度が100度を超えている場所があります。大丈夫ですか？"
             line_bot_api.push_message(current_user_id, TextSendMessage(text=message))
         app.logger.info(f'Received temp: {med_temp}')
         return {'status': 'success'}
