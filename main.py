@@ -62,7 +62,7 @@ def handle_message(event):
     message_text = event.message.text
     if message_text.lower() == '温度':
         if med_temp is not None:
-            reply_text = f'現在の温度は {med_temp} 度です。'
+            reply_text = f'現在の温度は {tmp} 度です。'
         else:
             reply_text = f'温度データはありません。'
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
