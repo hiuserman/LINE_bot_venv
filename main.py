@@ -55,14 +55,14 @@ def callback():
 # メッセージイベントのハンドリング
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    #global averagetemp
+    global average_temp
     global current_user_id 
     user_id = event.source.user_id
     current_user_id = user_id
     message_text = event.message.text
     if message_text.lower() == '温度':
-        if tmp != "None":
-            reply_text = f'現在の温度は {tmp} 度です。'
+        if average_temp != "None":
+            reply_text = f'現在の温度は {average_temp} 度です。'
         else:
             reply_text = f'温度データはありません。'
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
