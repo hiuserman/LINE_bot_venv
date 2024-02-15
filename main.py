@@ -98,6 +98,7 @@ def process_image(file_path):
         return 'Failed to load the image', 400
 
     results = pose.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB)) # ポーズ検出
+    global current_user_id
     if results.pose_landmarks:
         # ポーズ検出された点を描画
         mp.solutions.drawing_utils.draw_landmarks(
