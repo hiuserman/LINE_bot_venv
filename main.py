@@ -65,7 +65,7 @@ def handle_message(event):
         else:
             reply_text = f'温度データはありません。'
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
-    if message_text.lower() == '温度':
+    if message_text.lower() == '説明':
         reply_text = f'画像：カメラの画像データが送信されます。\n温度：温度データが送信されます。\n熱画像：カメラの熱画像データが送信されます。'
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
     elif message_text.lower() == '画像':
