@@ -23,7 +23,6 @@ med_temp = os.environ['MEDTEMP']
 tmp = os.environ['TMP']
 hum = os.environ['HUM']
 
-#averagetemp = None  # デフォルト値を設定
 current_user_id = None
 
 app = Flask(__name__)
@@ -165,8 +164,8 @@ def update_temperatures():
         os.environ['MEDTEMP'] = str(med_temp)
         os.environ['AVERAGETEMP'] = str(average_temp)
         
-        if float(high_temp) > 28:
-            message = "室温が28度を超えています。"
+        if float(high_temp) > 29:
+            message = "室温が29度を超えています。"
             line_bot_api.push_message(current_user_id, TextSendMessage(text=message))
         if float(high_temp) < 18:
             message = "室温が18度以下です。"
