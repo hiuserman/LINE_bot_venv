@@ -78,7 +78,17 @@ def handle_message(event):
             #original_content_url='{}/{}'.format(RENDER_APP_NAME, image_path),
             #preview_image_url='{}/{}'.format(RENDER_APP_NAME, image_path) なぜか直接指定しないと動かない
         )
-        line_bot_api.reply_message(event.reply_token, image_message)   
+        line_bot_api.reply_message(event.reply_token, image_message)  
+    elif message_text.lower() == '画像2':
+        # 画像ファイルのパスを指定
+        image_path = 'static/images/received_image.jpg'
+        image_message = ImageSendMessage(
+            original_content_url='https://hiuser-linebot-sotuken2.onrender.com/static/images/received_image.jpg',
+            preview_image_url='https://hiuser-linebot-sotuken2.onrender.com/static/images/received_image.jpg'
+            #original_content_url='{}/{}'.format(RENDER_APP_NAME, image_path),
+            #preview_image_url='{}/{}'.format(RENDER_APP_NAME, image_path) なぜか直接指定しないと動かない
+        )
+        line_bot_api.reply_message(event.reply_token, image_message)  
         
 def process_image(file_path):
     mp_pose = mp.solutions.pose
