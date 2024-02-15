@@ -119,16 +119,14 @@ def process_image(file_path):
         return 'No pose detected', 400
 
 def is_fallen(pose_landmarks):
-    # 例: 頭（0番）と足（例えば左足のかかと：29番、右足のかかと：30番）のランドマークを取得
-    head = pose_landmarks.landmark[0]
-    left_heel = pose_landmarks.landmark[29]
-    right_heel = pose_landmarks.landmark[30]
+    # 腰のランドマークを取得（右腰: 24番, 左腰: 23番）
+    right_hip = pose_landmarks.landmark[mp.solutions.pose.PoseLandmark.RIGHT_HIP.value]
+    left_hip = pose_landmarks.landmark[mp.solutions.pose.PoseLandmark.LEFT_HIP.value]
 
-    # 頭が足よりも低い位置にあるかどうかをチェック
-    if head.y > left_heel.y and head.y > right_heel.y:
-        return True  # 転倒していると判断
+    # 腰の位置が画面の下部（例えば、画面高さの80%以上の位置）にあるかどうかをチェック
+    if right_hip.y > 0.8 or left_hip.y > 0.8:
+        return True  # 転倒している可能性があると判断
     return False
-
     
 @app.route('/update_env', methods=['POST'])
 def update_env():
