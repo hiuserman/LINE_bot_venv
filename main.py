@@ -66,6 +66,9 @@ def handle_message(event):
         else:
             reply_text = f'温度データはありません。'
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
+    if message_text.lower() == '温度':
+        reply_text = f'画像：カメラの画像データが送信されます。\n温度：温度データが送信されます。\n熱画像：カメラの熱画像データが送信されます。'
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
     elif message_text.lower() == '画像':
         # 画像ファイルのパスを指定
         image_path = 'static/images/received_image2.jpg'
@@ -89,6 +92,14 @@ def process_image(file_path):
         # ポーズ検出された点を描画
         mp.solutions.drawing_utils.draw_landmarks(
             image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+        
+        fallen = is_fallen(results.pose_landmarks)
+        if fallen:
+            message = "転倒している可能性があります"
+            line_bot_api.push_message(current_user_id, TextSendMessage(text=message))
+        else:
+            message = "転倒している可能性があります"
+            line_bot_api.push_message(current_user_id, TextSendMessage(text=message))
 
         # 描画された画像を新しいファイル名で保存
         output_path = os.path.join('static/images', 'received_image2.jpg')
@@ -97,7 +108,18 @@ def process_image(file_path):
     else:
         return 'No pose detected', 400
 
+def is_fallen(pose_landmarks):
+    # 例: 頭（0番）と足（例えば左足のかかと：29番、右足のかかと：30番）のランドマークを取得
+    head = pose_landmarks.landmark[0]
+    left_heel = pose_landmarks.landmark[29]
+    right_heel = pose_landmarks.landmark[30]
 
+    # 頭が足よりも低い位置にあるかどうかをチェック
+    if head.y > left_heel.y and head.y > right_heel.y:
+        return True  # 転倒していると判断
+    return False
+
+    
 @app.route('/update_env', methods=['POST'])
 def update_env():
     global tmp,hum
@@ -132,9 +154,15 @@ def update_temperatures():
         os.environ['MEDTEMP'] = str(med_temp)
         os.environ['AVERAGETEMP'] = str(average_temp)
         
-        if float(high_temp) > 100:
-            message = "温度が100度を超えている場所があります。大丈夫ですか？"
+        if float(high_temp) > 28:
+            message = "室温が28度を超えています。"
             line_bot_api.push_message(current_user_id, TextSendMessage(text=message))
+        if float(high_temp) < 18:
+            message = "室温が18度以下です。"
+            line_bot_api.push_message(current_user_id, TextSendMessage(text=message))    
+        if float(average_temp) > 100:
+            message = "温度が100度を超えている場所があります。大丈夫ですか？"
+            line_bot_api.push_message(current_user_id, TextSendMessage(text=message))    
         app.logger.info(f'Received temp: {med_temp}')
         return {'status': 'success'}
     except Exception as e:
