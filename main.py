@@ -70,6 +70,7 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
     elif message_text.lower() == '画像':
         # 画像ファイルのパスを指定
+        process_image('static/images/preview.jpg')
         image_path = 'static/images/received_image2.jpg'
         image_message = ImageSendMessage(
             original_content_url='https://hiuser-linebot-sotuken2.onrender.com/static/images/received_image2.jpg',
