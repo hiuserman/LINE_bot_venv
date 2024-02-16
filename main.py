@@ -162,16 +162,15 @@ def update_temperatures():
         os.environ['MEDTEMP'] = str(med_temp)
         os.environ['AVERAGETEMP'] = str(average_temp)
         
-        if float(high_temp) > 29:
-            if float(average_temp) > 60:
-                message = "温度が60度を超えている場所があります。大丈夫ですか？"
-                line_bot_api.push_message(current_user_id, TextSendMessage(text=message)) 
-            else:
-                message = "室温が29度を超えています。"
-                line_bot_api.push_message(current_user_id, TextSendMessage(text=message))
-        if float(high_temp) < 18:
+        if float(average_temp) > 29:
+            message = "室温が29度を超えています。"
+            line_bot_api.push_message(current_user_id, TextSendMessage(text=message))
+        if float(average_temp) < 18:
             message = "室温が18度以下です。"
-            line_bot_api.push_message(current_user_id, TextSendMessage(text=message))       
+            line_bot_api.push_message(current_user_id, TextSendMessage(text=message))   
+        if float(high_temp) > 60:
+            message = "温度が60度を超えている場所があります。大丈夫ですか？"
+            line_bot_api.push_message(current_user_id, TextSendMessage(text=message))     
         app.logger.info(f'Received temp: {med_temp}')
         return {'status': 'success'}
     except Exception as e:
