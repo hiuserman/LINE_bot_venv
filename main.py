@@ -188,7 +188,7 @@ def receive_image():
         filename = 'received_image.jpg'  # 保存するファイル名
         file_path = os.path.join('static/images', filename)
         file.save(file_path)  # 保存先ディレクトリ
-        return process_image(file_path)
+        return process_image('static/images/preview.jpg')
 
 if __name__ == "__main__":
     app.run(debug=False)
