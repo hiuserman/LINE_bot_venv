@@ -70,7 +70,6 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
     elif message_text.lower() == '画像':
         # 画像ファイルのパスを指定
-        process_image('static/images/preview.jpg')
         image_path = 'static/images/received_image2.jpg'
         image_message = ImageSendMessage(
             original_content_url='https://hiuser-linebot-sotuken2.onrender.com/static/images/received_image2.jpg',
@@ -106,9 +105,6 @@ def process_image(file_path):
         
         fallen = is_fallen(results.pose_landmarks)
         if fallen:
-            message = "転倒している可能性があります"
-            line_bot_api.push_message(current_user_id, TextSendMessage(text=message))
-        else:
             message = "転倒している可能性があります"
             line_bot_api.push_message(current_user_id, TextSendMessage(text=message))
 
@@ -189,7 +185,7 @@ def receive_image():
         filename = 'received_image.jpg'  # 保存するファイル名
         file_path = os.path.join('static/images', filename)
         file.save(file_path)  # 保存先ディレクトリ
-        return process_image('static/images/preview.jpg')
+        return process_image(file_path)
 
 if __name__ == "__main__":
     app.run(debug=False)
